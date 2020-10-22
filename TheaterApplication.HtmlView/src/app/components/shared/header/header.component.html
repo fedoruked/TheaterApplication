@@ -1,0 +1,31 @@
+<div class="header">
+  <ul>
+    <li>
+      <h1>
+        <a [routerLink]="['/']">
+          Theater
+        </a>
+      </h1>
+    </li>
+    <li *ngIf="!hasUser">
+      <a [routerLink]="['/auth']">
+        Login
+      </a>
+    </li>
+    <li *ngIf="!hasUser">
+      <a [routerLink]="['/auth/registration']">
+        Registration
+      </a>
+    </li>
+    <li *ngIf="hasUser">
+      <a (click)="onLogout()">
+        Logout
+      </a>
+    </li>
+    <li>
+      <a [routerLink]="['/admin-panel']">
+        Admin
+      </a>
+    </li>
+  </ul>
+</div>

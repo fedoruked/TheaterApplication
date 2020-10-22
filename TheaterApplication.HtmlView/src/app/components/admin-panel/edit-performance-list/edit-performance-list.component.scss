@@ -1,0 +1,36 @@
+.list-wrap{
+  padding: 10px 12%;
+
+  table{
+    width: 100%;
+
+    thead{
+      font-weight: bold;
+      text-align: center;
+    }
+
+    tr{
+      td{
+        padding: 5px;
+        border: 1px solid black;
+        font-size: 16px;
+
+        button{
+          display: inline-block;
+          margin-right: 10px;
+        }
+
+        &:last-child{
+          text-align: center;
+        }
+      }
+    }
+  }
+}
+
+.create-wrap{
+  border: 1px solid rgb(100,100,100);
+  border-radius: 10px;
+  margin-top: 10px;
+  padding: 10px;
+}

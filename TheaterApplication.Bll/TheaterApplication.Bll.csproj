@@ -5,7 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TheaterApplication.Dal\TheaterApplication.Dal.csproj" />
+    <ProjectReference Include="..\TheaterApplication.Utils\TheaterApplication.Utils.csproj" />
   </ItemGroup>
 
 </Project>

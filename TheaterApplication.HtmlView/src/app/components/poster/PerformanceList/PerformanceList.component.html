@@ -1,0 +1,45 @@
+<div class="list-wrap">
+  <div class="filters">
+    <div class="row">
+      <div class="col-xs-12 col-12 col-md-4 form-group">
+        <p>From</p>
+        <dp-date-picker
+          theme="dp-material"
+          [(ngModel)]="fromDate"
+          (onSelect)="loadData()"
+          ></dp-date-picker>
+      </div>
+      <div class="col-xs-12 col-12 col-md-4 form-group">
+        <p>To</p>
+        <dp-date-picker
+          theme="dp-material"
+          [(ngModel)]="toDate"
+          (onSelect)="loadData()"
+          ></dp-date-picker>
+      </div>
+      <!-- TODO to optimize -->
+      <div class="col-xs-12 col-12 col-md-4 form-group">
+        <p>Search</p>
+        <input type="text"class="form-control" [(ngModel)]="keyword" (ngModelChange)="loadData()" >
+      </div>
+    </div>
+  </div>
+  <div class="list" *ngIf="posters != null">
+    <div class="item" *ngFor="let poster of posters | paginate: {itemsPerPage: pageSize, currentPage: page, totalItems: totalItems}">
+      <p class="name">{{poster.schedule.performance.name}}</p>
+      <p class="duration">
+        <span>{{poster.schedule.performance.durationMinutes}} minutes</span>
+        <br/>
+        <span>{{poster.freeTickets}} tickets</span>
+
+      </p>
+      <button class="btn btn-success" (click)="onCreateBooking(poster)">
+        {{poster.eventDate| date : 'MMM d, HH:mm'}}
+      </button>
+    </div>
+    <div class="pagination">
+      <pagination-controls (pageChange)="onPageChange($event)" ></pagination-controls>
+    </div>
+  </div>
+
+</div>
