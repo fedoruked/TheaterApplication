@@ -69,7 +69,7 @@ select p.id
 	, now() at time zone 'utc'
 	, now() at time zone 'utc'
 from performances p
-where name = 'The Great Gatsby';
+where name = 'Magic Goes Wrong';
 
 insert into performance_schedules(performance_id, start_at, tickets_count, is_repeat, created, updated)
 select p.id
@@ -79,4 +79,4 @@ select p.id
 	, now() at time zone 'utc'
 	, now() at time zone 'utc'
 from performances p
-where name = 'The Great Gatsby';
+where name = 'The Woman In Black';

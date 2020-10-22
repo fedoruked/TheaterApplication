@@ -32,8 +32,8 @@ namespace TheaterApplication.Dal.Repositories
 
             if (!string.IsNullOrEmpty(keyword))
             {
-                keyword = $"%{keyword}%";
-                query = query.Where(x => EF.Functions.Like(x.Schedule.Performance.Name, keyword));
+                keyword = $"%{keyword.ToLower()}%";
+                query = query.Where(x => EF.Functions.Like(x.Schedule.Performance.Name.ToLower(), keyword));
             }
 
             var totalCount = query.Count();
