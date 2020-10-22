@@ -18,7 +18,11 @@ using TheaterApplication.Bll.Helpers;
 using TheaterApplication.Bll.Helpers.Interfaces;
 using TheaterApplication.Bll.Services;
 using TheaterApplication.Bll.Services.Interfaces;
+using TheaterApplication.Bll.Storages;
+using TheaterApplication.Bll.Storages.Interfaces;
 using TheaterApplication.Dal;
+using TheaterApplication.Dal.Builders;
+using TheaterApplication.Dal.Builders.Interfaces;
 using TheaterApplication.Dal.Repositories;
 using TheaterApplication.Dal.Repositories.Interfaces;
 using TheaterApplication.Utils.Settings;
@@ -29,6 +33,8 @@ namespace TheaterApplication.WebApi
 {
     public class Startup
     {
+        readonly string AllowLocalSpecificOrigins = "_allowLocalSpecificOrigins";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -39,6 +45,17 @@ namespace TheaterApplication.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: AllowLocalSpecificOrigins, builder =>
+                {
+                    builder.
+                        SetIsOriginAllowed(x => new Uri(x).Host == "localhost").
+                        AllowAnyMethod().
+                        AllowAnyHeader();
+                });
+            });
+
             var mvcBuilder = services.AddControllers();
 
             SetupNewtonsoft(mvcBuilder);
@@ -72,6 +89,10 @@ namespace TheaterApplication.WebApi
 
             services.AddScoped<IPasswordHelper, PasswordHelper>();
             services.AddScoped<ITokenHelper, TokenHelper>();
+
+            services.AddScoped<IApplicationStorage, ApplicationStorage>();
+
+            services.AddTransient<IParametersBuilder, NpgsqlParametersBuilder>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -88,12 +109,16 @@ namespace TheaterApplication.WebApi
 
             app.UseRouting();
 
+            app.UseCors(AllowLocalSpecificOrigins);
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+            UpdateDatabase(app);
         }
 
         private void AddRepositories(IServiceCollection services)
@@ -102,22 +127,31 @@ namespace TheaterApplication.WebApi
             services.AddScoped<IUserRoleRepository, UserRoleRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<ITokenRepository, TokenRepository>();
+            services.AddScoped<IPerformanceRepository, PerformanceRepository>();
+            services.AddScoped<IPerformanceScheduleRepository, PerformanceScheduleRepository>();
+            services.AddScoped<IPerformancePosterRepository, PerformancePosterRepository>();
+            services.AddScoped<IPerformanceBookingRepository, PerformanceBookingRepository>();
         }
 
         private void AddServices(IServiceCollection services)
         {
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IPerformanceService, PerformanceService>();
+            services.AddScoped<IPerformanceScheduleService, PerformanceScheduleService>();
+            services.AddScoped<IPerformancePosterService, PerformancePosterService>();
+            services.AddScoped<IPerformanceBookingService, PerformanceBookingService>();
         }
 
         private void SetupNewtonsoft(IMvcBuilder mvcBuilder)
         {
             var contractResolver = new DefaultContractResolver
             {
-                NamingStrategy = new SnakeCaseNamingStrategy()
+                NamingStrategy = new CamelCaseNamingStrategy()
             };
 
             mvcBuilder.AddNewtonsoftJson(options => {
                 options.SerializerSettings.ContractResolver = contractResolver;
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
 
             //Setup global newtonsoft
@@ -126,6 +160,19 @@ namespace TheaterApplication.WebApi
                 Formatting = Formatting.Indented,
                 ContractResolver = contractResolver
             };
+        }
+
+        private static void UpdateDatabase(IApplicationBuilder app)
+        {
+            using (var serviceScope = app.ApplicationServices
+                .GetRequiredService<IServiceScopeFactory>()
+                .CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<TheaterDbContext>())
+                {
+                    context.Database.Migrate();
+                }
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using TheaterApplication.Dal.Repositories.Interfaces;
 
@@ -13,14 +14,14 @@ namespace TheaterApplication.Dal.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<T> FindAsync(object id)
+        public virtual async Task<T> FindAsync(object id)
         {
             var result = await _dbContext.Set<T>().FindAsync(id);
 
             return result;
         }
 
-        public async Task<T> UpdateAsync(T entity)
+        public virtual async Task<T> UpdateAsync(T entity)
         {
             _dbContext.Entry(entity).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync();
@@ -28,7 +29,7 @@ namespace TheaterApplication.Dal.Repositories
             return entity;
         }
 
-        public async Task<T> InsertAsync(T entity)
+        public virtual async Task<T> InsertAsync(T entity)
         {
             _dbContext.Entry(entity).State = EntityState.Added;
             await _dbContext.SaveChangesAsync();
@@ -36,7 +37,18 @@ namespace TheaterApplication.Dal.Repositories
             return entity;
         }
 
-        public async Task DeleteAsync(object id)
+        public virtual async Task<IEnumerable<T>> InsertRangeAsync(IEnumerable<T> entities)
+        {
+            foreach(var e in entities)
+            {
+                _dbContext.Entry(e).State = EntityState.Added;
+            }
+
+            await _dbContext.SaveChangesAsync();
+            return entities;
+        }
+
+        public virtual async Task DeleteAsync(object id)
         {
             var entity = await FindAsync(id);
 

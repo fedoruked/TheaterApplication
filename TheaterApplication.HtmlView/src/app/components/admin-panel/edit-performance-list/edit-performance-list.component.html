@@ -1,0 +1,64 @@
+<div class="list-wrap">
+  <div class="list" *ngIf="list != null">
+    <table>
+      <thead>
+        <tr>
+          <td>Name</td>
+          <td>Duration</td>
+          <td>Dates</td>
+          <td>Actions</td>
+        </tr>
+      </thead>
+      <tbody *ngIf="list != null">
+        <tr *ngFor="let item of list">
+          <td>{{item.name}}</td>
+          <td>{{item.durationMinutes}}</td>
+          <td>
+            <p *ngFor="let schedule of item.schedules">
+              {{schedule.startAt | date : 'MMM d, HH:mm'}}.
+              Total tickest - {{schedule.ticketsCount}}.
+              Is repeat <input type="checkbox"  [(ngModel)]="schedule.isRepeat" disabled />
+              <button class="btn btn-danger" style="float: right;" (click)="onDeleteSchedule(item.id, schedule.id)">Delete</button>
+            </p>
+            <p *ngIf="editPerformanceId != item.id" style="text-align: right;">
+              <button class="btn btn-info" (click)="onClickAdd(item.id)">Add</button>
+            </p>
+            <p *ngIf="editPerformanceId == item.id" style="border: 1px solid rgb(100,100,100);padding: 5px; border-radius: 5px">
+              <dp-date-picker
+                mode="daytime"
+                theme="dp-material"
+                [(ngModel)]="editStartAt"
+                placeholder="Start at"
+                ></dp-date-picker>
+              <input style="margin-top: 10px;" placeholder="Tickets count" type="number" [(ngModel)]="editTotalTickets" class="form-control" />
+              <input type="checkbox" [(ngModel)]="editIsRepeat" > Is repeat
+              <button  style="margin-top: 40px; float: right;" class="btn btn-success" (click)="onCreateSchedule()">Create</button>
+            </p>
+            <p *ngFor="let date of item.performancesDates">{{date.startAt| date : 'MMM d, HH:mm'}} Total tickets - {{date.ticketsCount}}. Booked - {{date.ticketsBooked}}</p>
+          </td>
+          <td>
+            <button class="btn btn-warning">Update</button>
+            <button class="btn btn-danger" (click)="onDelete(item.id, item.name)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="create-wrap">
+    <h2>Create performance</h2>
+    <div style="display: flex;">
+      <div class="col-xs-12 col-12 col-md-4 form-group">
+        <p>Name</p>
+        <input type="text" [(ngModel)]="name" class="form-control" />
+      </div>
+      <div class="col-xs-12 col-12 col-md-4 form-group">
+        <p>Duration</p>
+        <input type="number" [(ngModel)]="duration" class="form-control" />
+      </div>
+      <div class="col-xs-12 col-12 col-md-4 form-group">
+        <button  style="margin-top: 40px;" class="btn btn-success" (click)="onCreatePerformance()">Create</button>
+      </div>
+    </div>
+  </div>
+
+</div>

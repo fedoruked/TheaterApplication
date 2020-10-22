@@ -17,5 +17,6 @@ namespace TheaterApplication.Dal.DbModels
 
         public virtual ICollection<UserRoleDbModel> UserRoles { get; set; }
         public virtual ICollection<TokenDbModel> Tokens { get; set; }
+        public virtual ICollection<PerformanceBookingDbModel> Bookings { get; set; }
     }
 }

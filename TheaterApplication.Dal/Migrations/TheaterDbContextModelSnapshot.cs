@@ -19,6 +19,161 @@ namespace TheaterApplication.Dal.Migrations
                 .HasAnnotation("ProductVersion", "3.1.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            modelBuilder.Entity("TheaterApplication.Dal.DbModels.PerformanceBookingDbModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnName("created")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("PosterId")
+                        .HasColumnName("poster_id")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnName("updated")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnName("user_id")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id")
+                        .HasName("pk_performance_bookings");
+
+                    b.HasIndex("PosterId")
+                        .HasName("ix_performance_bookings_poster_id");
+
+                    b.HasIndex("UserId")
+                        .HasName("ix_performance_bookings_user_id");
+
+                    b.ToTable("performance_bookings");
+                });
+
+            modelBuilder.Entity("TheaterApplication.Dal.DbModels.PerformanceDbModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnName("created")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("DurationMinutes")
+                        .HasColumnName("duration_minutes")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .HasColumnName("name")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnName("updated")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id")
+                        .HasName("pk_performances");
+
+                    b.HasIndex("Name")
+                        .HasName("ix_performances_name");
+
+                    b.ToTable("performances");
+                });
+
+            modelBuilder.Entity("TheaterApplication.Dal.DbModels.PerformancePosterDbModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<long?>("BookedCount")
+                        .HasColumnName("booked_count")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnName("created")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("DifferenceFromStartDays")
+                        .HasColumnName("difference_from_start_days")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("EventDate")
+                        .HasColumnName("event_date")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("ScheduleId")
+                        .HasColumnName("schedule_id")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnName("updated")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id")
+                        .HasName("pk_performance_posters");
+
+                    b.HasIndex("ScheduleId", "DifferenceFromStartDays")
+                        .IsUnique()
+                        .HasName("ix_performance_posters_schedule_id_difference_from_start_days");
+
+                    b.ToTable("performance_posters");
+                });
+
+            modelBuilder.Entity("TheaterApplication.Dal.DbModels.PerformanceScheduleDbModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnName("created")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsRepeat")
+                        .HasColumnName("is_repeat")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("PerformanceId")
+                        .HasColumnName("performance_id")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("StartAt")
+                        .HasColumnName("start_at")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("TicketsCount")
+                        .HasColumnName("tickets_count")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnName("updated")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id")
+                        .HasName("pk_performance_schedules");
+
+                    b.HasIndex("PerformanceId")
+                        .HasName("ix_performance_schedules_performance_id");
+
+                    b.HasIndex("StartAt")
+                        .HasName("ix_performance_schedules_start_at");
+
+                    b.ToTable("performance_schedules");
+                });
+
             modelBuilder.Entity("TheaterApplication.Dal.DbModels.RoleDbModel", b =>
                 {
                     b.Property<byte>("Id")
@@ -161,6 +316,43 @@ namespace TheaterApplication.Dal.Migrations
                         .HasName("ix_user_roles_user_id_role_id");
 
                     b.ToTable("user_roles");
+                });
+
+            modelBuilder.Entity("TheaterApplication.Dal.DbModels.PerformanceBookingDbModel", b =>
+                {
+                    b.HasOne("TheaterApplication.Dal.DbModels.PerformancePosterDbModel", "Poster")
+                        .WithMany("Bookings")
+                        .HasForeignKey("PosterId")
+                        .HasConstraintName("fk_performance_bookings_performance_posters_poster_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TheaterApplication.Dal.DbModels.UserDbModel", "User")
+                        .WithMany("Bookings")
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("fk_performance_bookings_users_user_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TheaterApplication.Dal.DbModels.PerformancePosterDbModel", b =>
+                {
+                    b.HasOne("TheaterApplication.Dal.DbModels.PerformanceScheduleDbModel", "Schedule")
+                        .WithMany("Posters")
+                        .HasForeignKey("ScheduleId")
+                        .HasConstraintName("fk_performance_posters_performance_schedules_schedule_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TheaterApplication.Dal.DbModels.PerformanceScheduleDbModel", b =>
+                {
+                    b.HasOne("TheaterApplication.Dal.DbModels.PerformanceDbModel", "Performance")
+                        .WithMany("Schedules")
+                        .HasForeignKey("PerformanceId")
+                        .HasConstraintName("fk_performance_schedules_performances_performance_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheaterApplication.Dal.DbModels.TokenDbModel", b =>

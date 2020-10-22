@@ -13,6 +13,8 @@
     <Compile Remove="Migrations\20201017083030_init-data-roles.Designer.cs" />
     <Compile Remove="Migrations\20201019080245_add-users-approved-logic.cs" />
     <Compile Remove="Migrations\20201019080245_add-users-approved-logic.Designer.cs" />
+    <Compile Remove="Migrations\20201021134929_test.cs" />
+    <Compile Remove="Migrations\20201021134929_test.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,6 +25,19 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TheaterApplication.Utils\TheaterApplication.Utils.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Scripts\GeneratePostersFunction.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Scripts\StartData.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

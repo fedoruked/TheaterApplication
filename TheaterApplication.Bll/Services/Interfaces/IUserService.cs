@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using TheaterApplication.Bll.Models;
+using TheaterApplication.Bll.Models.Enums;
 
 namespace TheaterApplication.Bll.Services.Interfaces
 {
@@ -11,5 +10,6 @@ namespace TheaterApplication.Bll.Services.Interfaces
         Task<UserWithTokenData> LoginAsync(string email, string password);
         Task<User> CreateAsync(string email, string password);
         Task<UserWithTokenData> ApproveAsync(string email, Guid? code);
+        AuthorizationResultEnum Authorization(string token, string[] roles);
     }
 }

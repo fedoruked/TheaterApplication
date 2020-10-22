@@ -60,28 +60,34 @@ namespace TheaterApplication.Bll.Helpers
 
         private string Decrypt(string encryptedText)
         {
-            string result;
-            encryptedText = encryptedText.Replace(" ", "+");
-            byte[] cipherBytes = Convert.FromBase64String(encryptedText);
+            string result = null;
 
-            using (Aes encryptor = Aes.Create())
+            try
             {
-                Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(
-                    _settings.EncriptionPassword, _settings.EncriptionSalt);
-                encryptor.Key = pdb.GetBytes(32);
-                encryptor.IV = pdb.GetBytes(16);
+                encryptedText = encryptedText.Replace(" ", "+");
+                byte[] cipherBytes = Convert.FromBase64String(encryptedText);
 
-                using (MemoryStream ms = new MemoryStream())
+                using (Aes encryptor = Aes.Create())
                 {
-                    using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write))
-                    {
-                        cs.Write(cipherBytes, 0, cipherBytes.Length);
-                        cs.Close();
-                    }
+                    Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(
+                        _settings.EncriptionPassword, _settings.EncriptionSalt);
+                    encryptor.Key = pdb.GetBytes(32);
+                    encryptor.IV = pdb.GetBytes(16);
 
-                    result = Encoding.Unicode.GetString(ms.ToArray());
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write))
+                        {
+                            cs.Write(cipherBytes, 0, cipherBytes.Length);
+                            cs.Close();
+                        }
+
+                        result = Encoding.Unicode.GetString(ms.ToArray());
+                    }
                 }
             }
+            catch { /* ignored */ }
+           
 
             return result;
         }

@@ -2,6 +2,7 @@
 using System.Linq;
 using TheaterApplication.Bll.Models;
 using TheaterApplication.Dal.DbModels;
+using TheaterApplication.WebApi.PostModels;
 using TheaterApplication.WebApi.ViewModels;
 
 namespace TheaterApplication.WebApi.Mapping
@@ -22,9 +23,23 @@ namespace TheaterApplication.WebApi.Mapping
                     )
                 );
             CreateMap<UserDbModel, User>();
-
             CreateMap<UserWithTokenData, UserVm>();
             CreateMap<User, UserVm>();
+
+            CreateMap<PerformancePm, Performance>();
+            CreateMap<Performance, PerformanceDbModel>();
+            CreateMap<PerformanceDbModel, Performance>();
+            CreateMap<Performance, PerformanceVm>();
+
+            CreateMap<PerformanceSchedulePm, PerformanceSchedule>();
+            CreateMap<PerformanceSchedule, PerformanceScheduleDbModel>();
+            CreateMap<PerformanceScheduleDbModel, PerformanceSchedule>();
+            CreateMap<PerformanceSchedule, PerformanceScheduleVm>();
+
+            CreateMap<PerformancePosterPm, PerformancePoster>();
+            CreateMap<PerformancePoster, PerformancePosterDbModel>();
+            CreateMap<PerformancePosterDbModel, PerformancePoster>();
+            CreateMap<PerformancePoster, PerformancePosterVm>();
         }
     }
 }

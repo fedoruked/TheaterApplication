@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TheaterApplication.Bll.Exceptions;
 using TheaterApplication.Bll.Helpers.Interfaces;
 using TheaterApplication.Bll.Models;
+using TheaterApplication.Bll.Models.Enums;
 using TheaterApplication.Bll.Services.Interfaces;
+using TheaterApplication.Bll.Storages.Interfaces;
 using TheaterApplication.Dal.DbModels;
 using TheaterApplication.Dal.Enums;
 using TheaterApplication.Dal.Repositories.Interfaces;
@@ -22,6 +25,7 @@ namespace TheaterApplication.Bll.Services
         private readonly IPasswordHelper _passwordHelper;
         private readonly ITokenHelper _tokenHelper;
         private readonly IMapper _mapper;
+        private readonly IApplicationStorage _appStorage;
 
         private readonly TokenSettings _tokenSettings;
 
@@ -31,6 +35,7 @@ namespace TheaterApplication.Bll.Services
             IPasswordHelper passwordHelper,
             ITokenHelper tokenHelper,
             IMapper mapper,
+            IApplicationStorage appStorage,
 
             TokenSettings tokenSettings)
         {
@@ -40,6 +45,7 @@ namespace TheaterApplication.Bll.Services
             _passwordHelper = passwordHelper;
             _tokenHelper = tokenHelper;
             _mapper = mapper;
+            _appStorage = appStorage;
 
             _tokenSettings = tokenSettings;
         }
@@ -134,6 +140,34 @@ namespace TheaterApplication.Bll.Services
             userWithTokenData = await CreateTokenAsync(userWithTokenData);
 
             return userWithTokenData;
+        }
+
+        public AuthorizationResultEnum Authorization(string token, string[] roles)
+        {
+            var userWithToken = string.IsNullOrEmpty(token)
+                ? null : _tokenHelper.DecryptData(token);
+
+            AuthorizationResultEnum result;
+
+            if (userWithToken == null)
+            {
+                result = AuthorizationResultEnum.UserNotFound;
+            }
+            else if(userWithToken.Expired.HasValue && userWithToken.Expired <= DateTime.UtcNow)
+            {
+                result = AuthorizationResultEnum.TokenExpired;
+            }
+            else if (roles != null && !userWithToken.Roles.Intersect(roles).Any())
+            {
+                result = AuthorizationResultEnum.RoleNotAllowed;
+            }
+            else
+            {
+                _appStorage.User = userWithToken;
+                result = AuthorizationResultEnum.OK;
+            }
+
+            return result;
         }
 
         private async Task<UserWithTokenData> CreateTokenAsync(
